@@ -193,16 +193,18 @@ SysLogger.prototype._send = function(message, severity) {
                     });
         socket.close();
     } else {
-        socket = dgram.createSocket('unix_dgram');
-        socket.send(messageBuffer,
-                    0,
-                    messageBuffer.length,
-                    this.path,
-                    function (err) {
-                        if (err) {
-                            console.error("Couldn't send message to /dev/log: " + err);
-                        }
-                    });
+        if (!this.unixDatagramSocket) {
+            this.unixDatagramSocket = dgram.createSocket('unix_dgram');
+        }
+        this.unixDatagramSocket.send(messageBuffer,
+                                     0,
+                                     messageBuffer.length,
+                                     this.path,
+                                     function (err) {
+                                         if (err) {
+                                             console.error("Couldn't send message to /dev/log: " + err);
+                                         }
+                                     });
     }
 };
 
