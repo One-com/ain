@@ -26,6 +26,7 @@ var Severity = {
     alert:  1,
     crit:   2,
     err:    3,
+    error:  3,
     warn:   4,
     notice: 5,
     info:   6,
@@ -107,20 +108,18 @@ function SysLogger() {
  * @param {String} tag By default is __filename
  * @param {Facility|Number|String} By default is "user"
  * @param {String} socketType Either "udp" (the default) or "unix"
+ * @param {Number|String} severityThreshold The lowest severity level
+ * of messages that should actually be sent to syslog. Defaults to 'debug'
+ * (everything is let through).
  * @param {String} hostnameOrPath The hostname if the socket type is
  * "udp" (defaults to "localhost"), or the path to the socket if the
  * socket type is "unix" (defaults to 514).
  * @param {String} port The port, only used if the socket type is "udp"
  */
-SysLogger.prototype.set = function(tag, facility, socketType, hostnameOrPath, port) {
+SysLogger.prototype.set = function(tag, facility, severityThreshold, socketType, hostnameOrPath, port) {
     this.setTag(tag);
     this.setFacility(facility);
-    if (socketType !== 'udp' && socketType !== 'unix') {
-        // Backwards compatibility: Assume that the socketType argument was left out and assume 'udp'.
-        port = hostnameOrPath;
-        hostnameOrPath = socketType;
-        socketType = 'udp';
-    }
+    this.setSeverityThreshold(severityThreshold);
     this.setSocketType(socketType);
     if (socketType === 'unix') {
         this.setPath(hostnameOrPath);
@@ -160,6 +159,21 @@ SysLogger.prototype.setPath = function(path) {
     this.path = path || '/dev/log';
 };
 
+SysLogger.prototype.setSeverityThreshold = function(severityThreshold) {
+    if (typeof severityThreshold === 'string') {
+        if (severityThreshold in Severity) {
+            severityThreshold = Severity[severityThreshold];
+        } else {
+            throw new Error("setSeverityThreshold: Invalid severity threshold: " + severityThreshold);
+        }
+    }
+    if (typeof severityThreshold !== 'undefined') {
+        this.severityThreshold = severityThreshold;
+    } else {
+        this.severityThreshold = Severity.debug;
+    }
+};
+
 /**
  * Get new instance of SysLogger. All arguments is similar as `set`
  * @returns {SysLogger}
@@ -175,36 +189,37 @@ SysLogger.prototype.get = function() {
  * @param {Severity} severity
  */
 SysLogger.prototype._send = function(message, severity) {
-    var socket,
-        messageBuffer = new Buffer('<' + (this.facility * 8 + severity) + '>' +
-        getDate() + ' ' + this.hostname + ' ' +
-        this.tag + '[' + process.pid + ']:' + message);
-    if (this.socketType === 'udp') {
-        socket = dgram.createSocket('udp4');
-        socket.send(messageBuffer,
-                    0,
-                    messageBuffer.length,
-                    this.port,
-                    this.hostname,
-                    function(err) {
-                        if (err){
-                            console.error('Cannot connect to %s:%d', this.hostname, this.port);
-                        }
-                    });
-        socket.close();
-    } else {
-        if (!this.unixDatagramSocket) {
-            this.unixDatagramSocket = dgram.createSocket('unix_dgram');
+    if (severity <= this.severityThreshold) {
+        var messageBuffer = new Buffer('<' + (this.facility * 8 + severity) + '>' +
+            getDate() + ' ' + this.hostname + ' ' +
+            this.tag + '[' + process.pid + ']:' + message);
+        if (this.socketType === 'udp') {
+            var socket = dgram.createSocket('udp4');
+            socket.send(messageBuffer,
+                        0,
+                        messageBuffer.length,
+                        this.port,
+                        this.hostname,
+                        function(err) {
+                            if (err){
+                                console.error('Cannot connect to %s:%d', this.hostname, this.port);
+                            }
+                        });
+            socket.close();
+        } else {
+            if (!this.unixDatagramSocket) {
+                this.unixDatagramSocket = dgram.createSocket('unix_dgram');
+            }
+            this.unixDatagramSocket.send(messageBuffer,
+                                         0,
+                                         messageBuffer.length,
+                                         this.path,
+                                         function (err) {
+                                             if (err) {
+                                                 console.error("Couldn't send message to /dev/log: " + err);
+                                             }
+                                         });
         }
-        this.unixDatagramSocket.send(messageBuffer,
-                                     0,
-                                     messageBuffer.length,
-                                     this.path,
-                                     function (err) {
-                                         if (err) {
-                                             console.error("Couldn't send message to /dev/log: " + err);
-                                         }
-                                     });
     }
 };
 

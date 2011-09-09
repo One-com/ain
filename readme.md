@@ -47,6 +47,7 @@ By default *ain* sets following destinations:
 
 * `TAG` - `__filename`
 * `Facility` - user (1)
+* `Severity threshold` - 'debug' (lets all messages through)
 * `Socket type` - udp
 * `HOSTNAME` - localhost
 * `PORT` - 514
@@ -54,19 +55,20 @@ By default *ain* sets following destinations:
 You can change them by `set` function. `set` function is chainable.
 
     var logger = require('ain2')
-            .set('node-test-app', 'daemon', 'udp', 'devhost', 3000);
+            .set('node-test-app', 'daemon', 'error', 'udp', 'devhost', 3000);
+    logger.error('some error');
     logger.warn('some warning');
 
 ... and in `/var/log/daemon.log`:
 
-    Dec  5 07:08:58 devhost node-test-app[10045]: some warning
+    Dec  5 07:08:58 devhost node-test-app[10045]: some error
 
-`set` function takes up to five arguments, all of which are
-optional. The first three are always `tag`, `facility`,
-`socketType`. If `socketType` is specified as `udp`, the next two
-arguments will be interpreted as `hostname` and `port`.  If
-`socketType` is `unix`, the fourth argument is interpreted as the
-`path` of the socket, defaulting to `/dev/log`.
+`set` function takes up to six arguments, all of which are
+optional. The first four are always `tag`, `facility`,
+`socketType`, and `severityThreshold`. If `socketType` is specified
+as `udp`, the next two arguments will be interpreted as `hostname`
+and `port`.  If `socketType` is `unix`, the fourth argument is
+interpreted as the `path` of the socket, defaulting to `/dev/log`.
 
 `tag` and `hostname` arguments is just *RFC 3164* `TAG` and `HOSTNAME` of
 your messages.
@@ -152,14 +154,15 @@ If you need log message with different `TAG`, `facility` and `HOSTNAME`
 without touching default logger, you can get independent instance of logger
 by `get` function.
 
-    var logger = require('ain').set('node-test-app', 'daemon', 'devhost');
+    var logger = require('ain').set('node-test-app', 'daemon', null, 'udp', 'devhost');
     logger.warn('some warning');
 
-    var anotherLogger = logger.get(logger.tag, 'local0', logger.hostname);
-    anotherLogger.log('another messgage');
+    var anotherLogger = logger.get(logger.tag, 'local0', null, 'udp', logger.hostname);
+    anotherLogger.log('another message');
+
+    var yetAnotherLogger = logger.get(logger.tag, 'local0', 'warn', 'unix', '/dev/log');
+    yetAnotherLogger.log('yet another message');
 
 `get` function takes three arguments - as well as `set` function and return
 new logger object. This object is just new instance of "logger" and has all
 *ain* functions (including `get`).
-
-
