@@ -9,7 +9,7 @@ implements all `console` functions and formatting. Also *ain* supports UTF-8
 (tested on Debian Testing/Sid).
 
 *Ain* send messages by UDP to `127.0.0.1:514` by default, but can also be
-configured to use a unix domain socket, eg. `/dev/log`, although that's
+configured to use a unix datagram socket, eg. `/dev/log`, although that's
 a less scalable setup. See [RFC 3164](http://www.faqs.org/rfcs/rfc3164.html).
 
 *In the Phoenician alphabet letter "ain" indicates eye.
@@ -67,7 +67,7 @@ You can change them by `set` function. `set` function is chainable.
 optional. The first four are always `tag`, `facility`,
 `socketType`, and `severityThreshold`. If `socketType` is specified
 as `udp`, the next two arguments will be interpreted as `hostname`
-and `port`.  If `socketType` is `unix`, the fourth argument is
+and `port`.  If `socketType` is `unixDatagramSocket`, the fourth argument is
 interpreted as the `path` of the socket, defaulting to `/dev/log`.
 
 `tag` and `hostname` arguments is just *RFC 3164* `TAG` and `HOSTNAME` of
@@ -160,7 +160,7 @@ by `get` function.
     var anotherLogger = logger.get(logger.tag, 'local0', null, 'udp', logger.hostname);
     anotherLogger.log('another message');
 
-    var yetAnotherLogger = logger.get(logger.tag, 'local0', 'warn', 'unix', '/dev/log');
+    var yetAnotherLogger = logger.get(logger.tag, 'local0', 'warn', 'unixDatagramSocket', '/dev/log');
     yetAnotherLogger.log('yet another message');
 
 `get` function takes three arguments - as well as `set` function and return

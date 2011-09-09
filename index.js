@@ -107,13 +107,13 @@ function SysLogger() {
  * Init function. All arguments are optional
  * @param {String} tag By default is __filename
  * @param {Facility|Number|String} By default is "user"
- * @param {String} socketType Either "udp" (the default) or "unix"
+ * @param {String} socketType Either "udp" (the default) or "unixDatagramSocket"
  * @param {Number|String} severityThreshold The lowest severity level
  * of messages that should actually be sent to syslog. Defaults to 'debug'
  * (everything is let through).
  * @param {String} hostnameOrPath The hostname if the socket type is
  * "udp" (defaults to "localhost"), or the path to the socket if the
- * socket type is "unix" (defaults to 514).
+ * socket type is "unixDatagramSocket" (defaults to 514).
  * @param {String} port The port, only used if the socket type is "udp"
  */
 SysLogger.prototype.set = function(tag, facility, severityThreshold, socketType, hostnameOrPath, port) {
@@ -121,7 +121,7 @@ SysLogger.prototype.set = function(tag, facility, severityThreshold, socketType,
     this.setFacility(facility);
     this.setSeverityThreshold(severityThreshold);
     this.setSocketType(socketType);
-    if (socketType === 'unix') {
+    if (socketType === 'unixDatagramSocket') {
         this.setPath(hostnameOrPath);
     } else if (socketType === 'udp') {
         this.setHostname(hostnameOrPath);
@@ -207,6 +207,7 @@ SysLogger.prototype._send = function(message, severity) {
                         });
             socket.close();
         } else {
+            // Assume "unixDatagramSocket"
             if (!this.unixDatagramSocket) {
                 this.unixDatagramSocket = dgram.createSocket('unix_dgram');
             }
