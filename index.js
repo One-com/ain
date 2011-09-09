@@ -151,12 +151,12 @@ SysLogger.prototype.get = function() {
  */
 SysLogger.prototype._send = function(message, severity) {
     var client = dgram.createSocket('udp4');
-    var message = new Buffer('<' + (this.facility * 8 + severity) + '>' +
-        getDate() + ' ' + this.hostname + ' ' + 
+    var messageBuffer = new Buffer('<' + (this.facility * 8 + severity) + '>' +
+        getDate() + ' ' + this.hostname + ' ' +
         this.tag + '[' + process.pid + ']:' + message);
-    client.send(message,
+    client.send(messageBuffer,
                 0,
-                message.length,
+                messageBuffer.length,
                 this.port,
                 this.hostname,
                 function(err) {
