@@ -73,6 +73,10 @@ function leadZero(n) {
     }
 }
 
+
+var monthNames = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
+                   'Sep', 'Oct', 'Nov', 'Dec' ];
+
 /**
  * Get current date in syslog format. Thanks https://github.com/kordless/lodge
  * @returns {String}
@@ -85,9 +89,7 @@ function getDate() {
     var month = dt.getMonth();
     var day = dt.getDate();
     (day < 10) && (day = ' ' + day);
-    var months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
-            'Sep', 'Oct', 'Nov', 'Dec' ];
-    return months[month] + " " + day + " " + hours + ":" + minutes
+    return monthNames[month] + " " + day + " " + hours + ":" + minutes
             + ":" + seconds;
 }
 
