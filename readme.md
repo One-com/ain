@@ -8,9 +8,9 @@ Brain-free [syslog](http://en.wikipedia.org/wiki/Syslog)** logging for
 implements all `console` functions and formatting. Also *ain* supports UTF-8
 (tested on Debian Testing/Sid).
 
-*Ain* send messages by UDP to `127.0.0.1:514` (it's more scalable than
-unix domain socket `/dev/log`) in
-[RFC 3164](http://www.faqs.org/rfcs/rfc3164.html).
+*Ain* send messages by UDP to `127.0.0.1:514` by default, but can also be
+configured to use a unix domain socket, eg. `/dev/log`, although that's
+a less scalable setup. See [RFC 3164](http://www.faqs.org/rfcs/rfc3164.html).
 
 *In the Phoenician alphabet letter "ain" indicates eye.
 
@@ -47,21 +47,26 @@ By default *ain* sets following destinations:
 
 * `TAG` - `__filename`
 * `Facility` - user (1)
+* `Socket type` - udp
 * `HOSTNAME` - localhost
-* `HOSTNAME` - 514
+* `PORT` - 514
 
 You can change them by `set` function. `set` function is chainable.
 
     var logger = require('ain2')
-            .set('node-test-app', 'daemon', 'devhost', 3000);
+            .set('node-test-app', 'daemon', 'udp', 'devhost', 3000);
     logger.warn('some warning');
 
 ... and in `/var/log/daemon.log`:
 
     Dec  5 07:08:58 devhost node-test-app[10045]: some warning
 
-`set` function takes three arguments: `tag`, `facility` and `hostname`. All
-of these are optional.
+`set` function takes up to five arguments, all of which are
+optional. The first three are always `tag`, `facility`,
+`socketType`. If `socketType` is specified as `udp`, the next two
+arguments will be interpreted as `hostname` and `port`.  If
+`socketType` is `unix`, the fourth argument is interpreted as the
+`path` of the socket, defaulting to `/dev/log`.
 
 `tag` and `hostname` arguments is just *RFC 3164* `TAG` and `HOSTNAME` of
 your messages.
