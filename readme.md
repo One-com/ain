@@ -1,46 +1,46 @@
 # ain*
 
 
-Brain-free [syslog](http://en.wikipedia.org/wiki/Syslog)** logging for 
+Brain-free [syslog](http://en.wikipedia.org/wiki/Syslog)** logging for
 [node.js](http://nodejs.org).
 
-*Ain* written with full compatibility with *node.js* `console` module. It 
-implements all `console` functions and formatting. Also *ain* supports UTF-8 
+*Ain* written with full compatibility with *node.js* `console` module. It
+implements all `console` functions and formatting. Also *ain* supports UTF-8
 (tested on Debian Testing/Sid).
 
-*Ain* send messages by UDP to `127.0.0.1:514` (it's more scalable than 
-unix domain socket `/dev/log`) in 
+*Ain* send messages by UDP to `127.0.0.1:514` (it's more scalable than
+unix domain socket `/dev/log`) in
 [RFC 3164](http://www.faqs.org/rfcs/rfc3164.html).
 
 *In the Phoenician alphabet letter "ain" indicates eye.
 
-**All examples tested under Debian Squeeze `rsyslog`. On other operating 
+**All examples tested under Debian Squeeze `rsyslog`. On other operating
 systems and logging daemons settings and paths may differ.
 
 ## Installation
 
-You can install *ain* as usual - by copy "ain" directory in your 
+You can install *ain* as usual - by copy "ain" directory in your
 `~/.node_libraries` or via *npm*
 
     npm install ain2
 
 ## Usage
 
-Usage of *ain* is very similar to *node.js* console. Following example 
+Usage of *ain* is very similar to *node.js* console. Following example
 demonstrates the replacement of the console:
 
     var console = require('ain2');
-    
+
     console.log('notice: %d', Date.now());
     console.info('info');
     console.error('error');
-    
+
 After launch in `/var/log/user` you can see the following:
 
     Dec  5 06:45:26 localhost ex.js[6041]: notice: 1291513526013
     Dec  5 06:45:26 localhost ex.js[6041]: info
     Dec  5 06:45:26 localhost ex.js[6041]: error
-    
+
 ## Changing destinations
 
 By default *ain* sets following destinations:
@@ -55,18 +55,18 @@ You can change them by `set` function. `set` function is chainable.
     var logger = require('ain2')
             .set('node-test-app', 'daemon', 'devhost', 3000);
     logger.warn('some warning');
-    
+
 ... and in `/var/log/daemon.log`:
 
     Dec  5 07:08:58 devhost node-test-app[10045]: some warning
-    
-`set` function takes three arguments: `tag`, `facility` and `hostname`. All 
+
+`set` function takes three arguments: `tag`, `facility` and `hostname`. All
 of these are optional.
 
-`tag` and `hostname` arguments is just *RFC 3164* `TAG` and `HOSTNAME` of 
+`tag` and `hostname` arguments is just *RFC 3164* `TAG` and `HOSTNAME` of
 your messages.
 
-`facility` is little more than just name. Refer to *Section 4.1.1* of 
+`facility` is little more than just name. Refer to *Section 4.1.1* of
 [RFC 3164](http://www.faqs.org/rfcs/rfc3164.html) it can be:
 
     ##  String  Description
@@ -93,8 +93,8 @@ You can set `facility` by `String` or `Number`:
 
     logger.set('node-test-app', 3);
     logger.set('node-test-app', 'daemon');
-    
-Also you can set `TAG`, `Facility` and `HOSTNAME` separatelly by `setTag`, 
+
+Also you can set `TAG`, `Facility` and `HOSTNAME` separatelly by `setTag`,
 `setFacility` and `setHostname` functions. All of them is chainable too.
 
 You can get all destinations by theese properties:
@@ -105,7 +105,7 @@ You can get all destinations by theese properties:
 
 ## Logging
 
-As noticed before *ain* implements all `console` functions. Severity level is 
+As noticed before *ain* implements all `console` functions. Severity level is
 referenced to [RFC 3164](http://www.faqs.org/rfcs/rfc3164.html):
 
     #  String   Description
@@ -119,8 +119,8 @@ referenced to [RFC 3164](http://www.faqs.org/rfcs/rfc3164.html):
     6  info     Informational: informational messages
     7  debug    Debug: debug-level messages
 
-*Ain* `console`-like functions behaviour is fully compatible to *node.js* and 
-logs messages with different severity levels: 
+*Ain* `console`-like functions behaviour is fully compatible to *node.js* and
+logs messages with different severity levels:
 
 * `log` - notice (5)
 * `info` - info (6)
@@ -134,27 +134,27 @@ logs messages with different severity levels:
 To log message with desired severity level you can use `send` function:
 
     logger.send('message', 'alert');
-    
-`send` function takes two arguments: message and optional severity level. By 
+
+`send` function takes two arguments: message and optional severity level. By
 default, severity level is *notice*.
 
 ## Additional loggers
 
-After importing *ain* already has default logger. Everything that was 
+After importing *ain* already has default logger. Everything that was
 described above - just about it.
 
-If you need log message with different `TAG`, `facility` and `HOSTNAME` 
-without touching default logger, you can get independent instance of logger 
+If you need log message with different `TAG`, `facility` and `HOSTNAME`
+without touching default logger, you can get independent instance of logger
 by `get` function.
 
     var logger = require('ain').set('node-test-app', 'daemon', 'devhost');
     logger.warn('some warning');
-    
-    var anotherLogger = logger.get(logger.tag, 'local0', logger.hostname);
-    anotherLogger.log('another messgage'); 
 
-`get` function takes three arguments - as well as `set` function and return 
-new logger object. This object is just new instance of "logger" and has all 
-*ain* functions (including `get`). 
+    var anotherLogger = logger.get(logger.tag, 'local0', logger.hostname);
+    anotherLogger.log('another messgage');
+
+`get` function takes three arguments - as well as `set` function and return
+new logger object. This object is just new instance of "logger" and has all
+*ain* functions (including `get`).
 
 

@@ -47,7 +47,7 @@ function format(f) {
     }
     return objects.join(' ');
   }
-  
+
   var i = 1;
   var args = arguments;
   var str = String(f).replace(formatRegExp, function(x) {
@@ -113,7 +113,7 @@ SysLogger.prototype.set = function(tag, facility, hostname, port) {
     this.setFacility(facility);
     this.setHostname(hostname);
     this.setPort(port);
-    
+
     return this;
 };
 
@@ -123,7 +123,7 @@ SysLogger.prototype.setTag = function(tag) {
 };
 SysLogger.prototype.setFacility = function(facility) {
     this.facility = facility || Facility.user;
-    if (typeof this.facility == 'string') 
+    if (typeof this.facility == 'string')
         this.facility = Facility[this.facility];
     return this;
 };
@@ -138,7 +138,7 @@ SysLogger.prototype.setPort = function(port) {
 };
 
 /**
- * Get new instance of SysLogger. All arguments is similar as `set` 
+ * Get new instance of SysLogger. All arguments is similar as `set`
  * @returns {SysLogger}
  */
 SysLogger.prototype.get = function() {
