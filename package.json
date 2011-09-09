@@ -1,25 +1,11 @@
 {
-    "name" : "ain2",
+    "name" : "ain2-papandreou",
     "description" : "Syslog logging for node.js. Continuation of ain",
     "version" : "0.0.2",
     "main" : "./index",
-    "author" : "Alexander Dorofeev <aka.spin@gmail.com>",
-    "contributors" : [
-        {
-            "name" : "Alexander Dorofeev",
-            "email" : "aka.spin@gmail.com"
-        },
-        {
-            "name" : "Patrick Huesler",
-            "email" : "patrick.huesler@googlemail.com"
-        }
-    ],
     "repository" : {
         "type" : "git",
-        "url" : "http://github.com/phuesler/ain.git"
-    },
-    "bugs" : {
-        "web" : "http://github.com/phuesler/ain/issues"
+        "url" : "http://github.com/papandreou/ain.git"
     },
     "licenses" : [
         {
