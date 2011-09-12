@@ -192,7 +192,8 @@ SysLogger.prototype.get = function() {
 SysLogger.prototype._send = function(message, severity) {
     if (severity <= this.severityThreshold) {
         var messageBuffer = new Buffer('<' + (this.facility * 8 + severity) + '>' +
-            getSyslogFormattedUTCTimestamp() + ' ' + this.hostname + ' ' +
+            getSyslogFormattedUTCTimestamp() + ' ' +
+            (this.hostname ? this.hostname + ' ' : '') +
             this.tag + '[' + process.pid + ']:' + message);
         if (this.socketType === 'udp') {
             var socket = dgram.createSocket('udp4');
