@@ -79,19 +79,19 @@ var monthNames = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
                    'Sep', 'Oct', 'Nov', 'Dec' ];
 
 /**
- * Get current date in syslog format. Thanks https://github.com/kordless/lodge
+ * Get current date and time (UTC) in syslog format. Thanks https://github.com/kordless/lodge
  * @returns {String}
  */
-function getDate() {
-    var dt = new Date();
-    var hours = leadZero(dt.getHours());
-    var minutes = leadZero(dt.getMinutes());
-    var seconds = leadZero(dt.getSeconds());
-    var month = dt.getMonth();
-    var day = dt.getDate();
+function getSyslogFormattedUTCTimestamp() {
+    var date = new Date();
+    var hours = leadZero(date.getUTCHours());
+    var minutes = leadZero(date.getUTCMinutes());
+    var seconds = leadZero(date.getUTCSeconds());
+    var month = date.getUTCMonth();
+    var day = date.getUTCDate();
     (day < 10) && (day = ' ' + day);
     return monthNames[month] + " " + day + " " + hours + ":" + minutes
-            + ":" + seconds;
+            + ":" + seconds + 'Z';
 }
 
 /**
@@ -191,7 +191,7 @@ SysLogger.prototype.get = function() {
 SysLogger.prototype._send = function(message, severity) {
     if (severity <= this.severityThreshold) {
         var messageBuffer = new Buffer('<' + (this.facility * 8 + severity) + '>' +
-            getDate() + ' ' + this.hostname + ' ' +
+            getSyslogFormattedUTCTimestamp() + ' ' + this.hostname + ' ' +
             this.tag + '[' + process.pid + ']:' + message);
         if (this.socketType === 'udp') {
             var socket = dgram.createSocket('udp4');
