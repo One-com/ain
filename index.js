@@ -172,6 +172,7 @@ SysLogger.prototype.setSeverityThreshold = function(severityThreshold) {
     } else {
         this.severityThreshold = Severity.debug;
     }
+    return this;
 };
 
 /**
