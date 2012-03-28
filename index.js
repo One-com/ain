@@ -1,4 +1,4 @@
-var dgram = require('dgram');
+var dgram = require('unix-dgram-papandreou');
 var Buffer = require('buffer').Buffer;
 
 var Facility = {

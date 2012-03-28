@@ -12,5 +12,8 @@
             "type": "MIT",
             "url": "http://github.com/phuesler/ain/master/LICENSE"
         }
-    ]
+    ],
+    "dependencies": {
+        "unix-dgram-papandreou": "=0.0.1"
+    }
 }
