@@ -1,5 +1,6 @@
-var dgram = require('unix-dgram-papandreou');
-var Buffer = require('buffer').Buffer;
+var dgram = require('dgram'),
+    unixDgram = require('unix-dgram-papandreou'),
+    Buffer = require('buffer').Buffer;
 
 var Facility = {
     kern:   0,
@@ -211,7 +212,7 @@ SysLogger.prototype._send = function(message, severity) {
         } else {
             // Assume "unixDatagramSocket"
             if (!this.unixDatagramSocket) {
-                this.unixDatagramSocket = dgram.createSocket('unix_dgram');
+                this.unixDatagramSocket = unixDgram.createSocket('unix_dgram');
             }
             this.unixDatagramSocket.send(messageBuffer,
                                          0,
