@@ -14,6 +14,6 @@
         }
     ],
     "dependencies": {
-        "unix-dgram-papandreou": "=0.0.1"
+        "unix-dgram": "=0.0.1"
     }
 }

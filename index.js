@@ -1,5 +1,5 @@
 var dgram = require('dgram'),
-    unixDgram = require('unix-dgram-papandreou'),
+    unixDgram = require('unix-dgram'),
     Buffer = require('buffer').Buffer;
 
 var Facility = {
