@@ -216,7 +216,7 @@ SysLogger.prototype._send = function(message, severity) {
             }
             this.unixDatagramSocket.send(messageBuffer,
                                          0,
-                                         messageBuffer.length,
+                                         Math.min(2000, messageBuffer.length), // Truncate message to prevent "send 90" errors.
                                          this.path,
                                          function (err) {
                                              if (err) {
