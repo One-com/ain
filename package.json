@@ -1,7 +1,7 @@
 {
     "name" : "ain2-papandreou",
     "description" : "Syslog logging for node.js. Continuation of ain",
-    "version" : "0.0.10",
+    "version" : "0.0.11",
     "main" : "./index",
     "repository" : {
         "type" : "git",
