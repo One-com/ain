@@ -199,7 +199,7 @@ SysLogger.prototype._send = function(message, severity) {
         if (this.socketType === 'udp') {
             var socket = dgram.createSocket('udp4');
             socket.on('error', function (err) {
-                console.error('ain: UDP4 socket emitted error: ' + err.stack);
+                console.error('ain: UDP4 socket emitted error: ' + err);
             });
             socket.send(messageBuffer,
                         0,
@@ -217,7 +217,7 @@ SysLogger.prototype._send = function(message, severity) {
             if (!this.unixDatagramSocket) {
                 this.unixDatagramSocket = unixDgram.createSocket('unix_dgram');
                 this.unixDatagramSocket.on('error', function (err) {
-                    console.error('ain: Unix datagram socket emitted error: ' + err.stack);
+                    console.error('ain: Unix datagram socket emitted error: ' + err);
                 });
             }
             this.unixDatagramSocket.send(messageBuffer,
