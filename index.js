@@ -226,7 +226,7 @@ SysLogger.prototype._send = function(message, severity) {
                                          this.path,
                                          function (err) {
                                              if (err) {
-                                                 console.error("Couldn't send message to /dev/log: " + err);
+                                                 console.error("Couldn't send message to " + this.path + ": " + err);
                                              }
                                          });
         }
