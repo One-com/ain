@@ -192,43 +192,51 @@ SysLogger.prototype.get = function() {
  */
 SysLogger.prototype._send = function(message, severity) {
     if (severity <= this.severityThreshold) {
-        var messageBuffer = new Buffer('<' + (this.facility * 8 + severity) + '>' +
+        var preambleBuffer = new Buffer('<' + (this.facility * 8 + severity) + '>' +
             getSyslogFormattedUTCTimestamp() + ' ' +
             (this.hostname ? this.hostname + ' ' : '') +
-            this.tag + '[' + process.pid + ']:' + message);
-        if (this.socketType === 'udp') {
-            var socket = dgram.createSocket('udp4');
-            socket.on('error', function (err) {
-                console.error('ain: UDP4 socket emitted error: ' + err);
-            });
-            socket.send(messageBuffer,
-                        0,
-                        messageBuffer.length,
-                        this.port,
-                        this.hostname,
-                        function(err) {
-                            if (err){
-                                console.error('Cannot connect to %s:%d', this.hostname, this.port);
-                            }
-                        });
-            socket.close();
-        } else {
-            // Assume "unixDatagramSocket"
-            if (!this.unixDatagramSocket) {
-                this.unixDatagramSocket = unixDgram.createSocket('unix_dgram');
-                this.unixDatagramSocket.on('error', function (err) {
-                    console.error('ain: Unix datagram socket emitted error: ' + err);
+            this.tag + '[' + process.pid + ']:');
+
+        // If the message exceeds 2000 bytes, split it up to prevent "send 90" errors:
+
+        var formattedMessageBuffer = Buffer.isBuffer(message) ? message : new Buffer(message),
+            chunkSize = 2000 - preambleBuffer.length - 100,
+            numChunks = Math.ceil(formattedMessageBuffer.length / chunkSize);
+
+        for (var i = 0 ; i < numChunks ; i += 1) {
+            var fragments = [preambleBuffer];
+            if (numChunks > 1) {
+                fragments.push(formattedMessageBuffer.slice(i * chunkSize, Math.min(formattedMessageBuffer.length, (i + 1) * chunkSize)),
+                               new Buffer(' [' + (i + 1) + '/' + numChunks + ']', 'ascii'));
+            } else {
+                fragments.push(formattedMessageBuffer);
+            }
+            var chunk = Buffer.concat(fragments);
+            if (this.socketType === 'udp') {
+                var socket = dgram.createSocket('udp4');
+                socket.on('error', function (err) {
+                    console.error('ain: UDP4 socket emitted error: ' + err);
+                });
+                socket.send(chunk, 0, chunk.length, this.port, this.hostname, function (err) {
+                    if (err){
+                        console.error('Cannot connect to %s:%d', this.hostname, this.port);
+                    }
+                });
+                socket.close();
+            } else {
+                // Assume "unixDatagramSocket"
+                if (!this.unixDatagramSocket) {
+                    this.unixDatagramSocket = unixDgram.createSocket('unix_dgram');
+                    this.unixDatagramSocket.on('error', function (err) {
+                        console.error('ain: Unix datagram socket emitted error: ' + err);
+                    });
+                }
+                this.unixDatagramSocket.send(chunk, 0, chunk.length, this.path, function (err) {
+                    if (err) {
+                        console.error("Couldn't send message to " + this.path + ": " + err);
+                    }
                 });
             }
-            this.unixDatagramSocket.send(messageBuffer,
-                                         0,
-                                         Math.min(2000, messageBuffer.length), // Truncate message to prevent "send 90" errors.
-                                         this.path,
-                                         function (err) {
-                                             if (err) {
-                                                 console.error("Couldn't send message to " + this.path + ": " + err);
-                                             }
-                                         });
         }
     }
 };
