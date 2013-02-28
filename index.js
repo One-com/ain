@@ -197,10 +197,10 @@ SysLogger.prototype._send = function(message, severity) {
             (this.hostname ? this.hostname + ' ' : '') +
             this.tag + '[' + process.pid + ']:');
 
-        // If the message exceeds 2000 bytes, split it up to prevent "send 90" errors:
+        // If the message exceeds ~2000 bytes, split it up to prevent "send 90" errors:
 
         var formattedMessageBuffer = Buffer.isBuffer(message) ? message : new Buffer(message),
-            chunkSize = 2000 - preambleBuffer.length - 100,
+            chunkSize = 2000 - preambleBuffer.length - 200,
             numChunks = Math.ceil(formattedMessageBuffer.length / chunkSize);
 
         for (var i = 0 ; i < numChunks ; i += 1) {
