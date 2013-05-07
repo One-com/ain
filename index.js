@@ -226,7 +226,12 @@ SysLogger.prototype._send = function(message, severity) {
             } else {
                 // Assume "unixDatagramSocket"
                 if (!this.unixDatagramSocket) {
-                    this.unixDatagramSocket = unixDgram.createSocket('unix_dgram');
+                    try {
+                        this.unixDatagramSocket = unixDgram.createSocket('unix_dgram');
+                    } catch (e) {
+                        console.error('_send: Failed to create unix_dgram socket: ' + err);
+                        return;
+                    }
                     this.unixDatagramSocket.on('error', function (err) {
                         console.error('ain: Unix datagram socket emitted error: ' + err);
                     });
