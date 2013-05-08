@@ -228,7 +228,7 @@ SysLogger.prototype._send = function(message, severity) {
                 if (!this.unixDatagramSocket) {
                     try {
                         this.unixDatagramSocket = unixDgram.createSocket('unix_dgram');
-                    } catch (e) {
+                    } catch (err) {
                         console.error('_send: Failed to create unix_dgram socket: ' + err);
                         return;
                     }
