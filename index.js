@@ -236,11 +236,15 @@ SysLogger.prototype._send = function(message, severity) {
                         console.error('ain: Unix datagram socket emitted error: ' + err);
                     });
                 }
-                this.unixDatagramSocket.send(chunk, 0, chunk.length, this.path, function (err) {
-                    if (err) {
-                        console.error("Couldn't send message to " + this.path + ": " + err);
-                    }
-                });
+                try {
+                    this.unixDatagramSocket.send(chunk, 0, chunk.length, this.path, function (err) {
+                        if (err) {
+                            console.error("Couldn't send message to " + this.path + ": " + err);
+                        }
+                    });
+                } catch (err) {
+                    console.error('unix_dgram.send failed: ' + err);
+                }
             }
         }
     }
