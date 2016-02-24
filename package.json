@@ -1,19 +1,19 @@
 {
-    "name" : "ain2-papandreou",
-    "description" : "Syslog logging for node.js. Continuation of ain",
-    "version" : "0.1.5",
-    "main" : "./index",
-    "repository" : {
-        "type" : "git",
-        "url" : "http://github.com/papandreou/ain.git"
-    },
-    "licenses" : [
-        {
-            "type": "MIT",
-            "url": "http://github.com/phuesler/ain/master/LICENSE"
-        }
-    ],
-    "dependencies": {
-        "unix-dgram": "=0.0.2"
+  "name": "ain2-papandreou",
+  "description": "Syslog logging for node.js. Continuation of ain",
+  "version": "0.1.5",
+  "main": "./index",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/papandreou/ain.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/phuesler/ain/master/LICENSE"
     }
+  ],
+  "dependencies": {
+    "unix-dgram": "0.2.2"
+  }
 }
