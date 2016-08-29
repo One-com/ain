@@ -1,6 +1,7 @@
 var dgram = require('dgram'),
     unixDgram = require('unix-dgram'),
-    Buffer = require('buffer').Buffer;
+    Buffer = require('buffer').Buffer,
+    util = require('util');
 
 var Facility = {
     kern:   0,
@@ -196,6 +197,11 @@ SysLogger.prototype._send = function(message, severity) {
             getSyslogFormattedUTCTimestamp() + ' ' +
             (this.hostname ? this.hostname + ' ' : '') +
             this.tag + '[' + process.pid + ']:');
+
+        // Stringify/inspect the message if it's not a string or a Buffer:
+        if (typeof message !== 'string' && !Buffer.isBuffer(message)) {
+            message = util.inspect(message);
+        }
 
         // If the message exceeds ~2000 bytes, split it up to prevent "send 90" errors:
 
